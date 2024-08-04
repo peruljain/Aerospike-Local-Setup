@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  aerospike:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aerospike
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+      - "3002:3002"
+      - "3003:3003"
+    volumes:
+      - aerospike_data:/opt/aerospike/data
+      - .:/etc/aerospike
+    networks:
+      - aerospike-net
+    command: [ "--config-file","/etc/aerospike/aerospike.conf"]
+
+  aerospike-tools:
+    image: aerospike/aerospike-tools
+    container_name: aerospike-tools
+    entrypoint: /bin/sh -c "while true; do sleep 3600; done"
+    networks:
+      - aerospike-net
+
+volumes:
+  aerospike_data:
+    driver: local
+
+networks:
+  aerospike-net:
+    driver: bridge
